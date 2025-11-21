@@ -62,5 +62,7 @@ help:
 
 install:
 	uv tool install .
+	@mkdir -p ~/.deepagents
+	@date '+%Y-%m-%d %H:%M:%S %Z' > ~/.deepagents/latest_updata_time.txt
 
 
