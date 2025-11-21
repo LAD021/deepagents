@@ -25,6 +25,7 @@ from deepagents_cli.agent_memory import AgentMemoryMiddleware
 from deepagents_cli.config import COLORS, config, console, get_default_coding_instructions, settings
 from deepagents_cli.integrations.sandbox_factory import get_default_working_dir
 from deepagents_cli.skills import SkillsMiddleware
+from deepagents_cli.working_memory_logger import WorkingMemoryLoggingMiddleware
 
 
 def list_agents() -> None:
@@ -314,6 +315,10 @@ def create_agent_with_config(
                 workspace_root=os.getcwd(), execution_policy=HostExecutionPolicy()
             ),
         ]
+        if os.environ.get("DEEPAGENTS_LOG_WORK_MEMORY", "false").lower() in {"1", "true", "yes"}:
+            agent_middleware.append(
+                WorkingMemoryLoggingMiddleware(settings=settings, assistant_id=assistant_id)
+            )
     else:
         # ========== REMOTE SANDBOX MODE ==========
         # Backend: Remote sandbox for code (no /memories/ route needed with filesystem-based memory)
@@ -329,6 +334,10 @@ def create_agent_with_config(
             AgentMemoryMiddleware(settings=settings, assistant_id=assistant_id),
             SkillsMiddleware(skills_dir=skills_dir, assistant_id=assistant_id),
         ]
+        if os.environ.get("DEEPAGENTS_LOG_WORK_MEMORY", "false").lower() in {"1", "true", "yes"}:
+            agent_middleware.append(
+                WorkingMemoryLoggingMiddleware(settings=settings, assistant_id=assistant_id)
+            )
 
     # Get the system prompt (sandbox-aware and with skills)
     system_prompt = get_system_prompt(assistant_id=assistant_id, sandbox_type=sandbox_type)
