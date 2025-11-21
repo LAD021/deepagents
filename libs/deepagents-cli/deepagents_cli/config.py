@@ -12,6 +12,12 @@ from langchain_core.language_models import BaseChatModel
 from rich.console import Console
 
 dotenv.load_dotenv()
+extra_env = os.environ.get("DEEPAGENTS_ENV_PATH") or str(Path.home() / ".deepagents/.env")
+try:
+    if extra_env and Path(extra_env).exists():
+        dotenv.load_dotenv(extra_env, override=False)
+except Exception:
+    pass
 
 # Color scheme
 COLORS = {

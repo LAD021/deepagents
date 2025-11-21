@@ -1,4 +1,4 @@
-.PHONY: all lint format test help
+.PHONY: all lint format test help install
 
 # Default target executed when no arguments are given to make.
 all: help
@@ -59,5 +59,8 @@ help:
 	@echo 'test                         - run unit tests'
 	@echo 'test TEST_FILE=<test_file>   - run all tests in file'
 	@echo '-- DOCUMENTATION tasks are from the top-level Makefile --'
+
+install:
+	uv tool install .
 
 
