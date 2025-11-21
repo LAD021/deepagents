@@ -135,6 +135,7 @@ class Settings:
     openai_api_key: str | None
     anthropic_api_key: str | None
     tavily_api_key: str | None
+    zhipu_api_key: str | None
 
     # Project information
     project_root: Path | None
@@ -153,6 +154,7 @@ class Settings:
         openai_key = os.environ.get("OPENAI_API_KEY")
         anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
         tavily_key = os.environ.get("TAVILY_API_KEY")
+        zhipu_key = os.environ.get("ZHIPUAI_API_KEY") or os.environ.get("CHATGLM_API_KEY")
 
         # Detect project
         project_root = _find_project_root(start_path)
@@ -161,6 +163,7 @@ class Settings:
             openai_api_key=openai_key,
             anthropic_api_key=anthropic_key,
             tavily_api_key=tavily_key,
+            zhipu_api_key=zhipu_key,
             project_root=project_root,
         )
 
@@ -178,6 +181,14 @@ class Settings:
     def has_tavily(self) -> bool:
         """Check if Tavily API key is configured."""
         return self.tavily_api_key is not None
+
+    @property
+    def has_chatglm(self) -> bool:
+        """Check if ChatGLM (Zhipu) API key or base URL is configured."""
+        if self.zhipu_api_key:
+            return True
+        base_url = os.environ.get("CHATGLM_BASE_URL") or os.environ.get("OPENAI_BASE_URL") or os.environ.get("OPENAI_API_BASE")
+        return bool(base_url and "open.bigmodel.cn" in base_url)
 
     @property
     def has_project(self) -> bool:
@@ -305,13 +316,27 @@ def create_model() -> BaseChatModel:
     Raises:
         SystemExit if no API key is configured
     """
+    if settings.has_chatglm:
+        from langchain_openai import ChatOpenAI
+
+        model_name = os.environ.get("CHATGLM_MODEL", "glm-4.6")
+        base_url = os.environ.get("CHATGLM_BASE_URL") or "https://open.bigmodel.cn/api/paas/v4/"
+        api_key = os.environ.get("ZHIPUAI_API_KEY") or os.environ.get("CHATGLM_API_KEY") or os.environ.get("OPENAI_API_KEY")
+        console.print(f"[dim]Using ChatGLM model: {model_name}[/dim]")
+        return ChatOpenAI(
+            model=model_name,
+            base_url=base_url,
+            api_key=api_key,
+        )
     if settings.has_openai:
         from langchain_openai import ChatOpenAI
 
         model_name = os.environ.get("OPENAI_MODEL", "gpt-5-mini")
+        base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("OPENAI_API_BASE")
         console.print(f"[dim]Using OpenAI model: {model_name}[/dim]")
         return ChatOpenAI(
             model=model_name,
+            base_url=base_url,
         )
     if settings.has_anthropic:
         from langchain_anthropic import ChatAnthropic
