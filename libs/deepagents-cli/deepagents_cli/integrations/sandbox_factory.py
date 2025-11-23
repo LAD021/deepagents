@@ -10,7 +10,7 @@ from pathlib import Path
 
 from deepagents.backends.protocol import SandboxBackendProtocol
 
-from deepagents_cli.config import console
+from deepagents_cli.config import console, detect_invoking_shell
 
 
 def _run_sandbox_setup(backend: SandboxBackendProtocol, setup_script_path: str) -> None:
@@ -33,8 +33,9 @@ def _run_sandbox_setup(backend: SandboxBackendProtocol, setup_script_path: str) 
     template = string.Template(script_content)
     expanded_script = template.safe_substitute(os.environ)
 
-    # Execute in sandbox with 5-minute timeout
-    result = backend.execute(f"bash -c {shlex.quote(expanded_script)}")
+    # Execute in sandbox with 5-minute timeout using invoking shell
+    shell_exe = detect_invoking_shell()
+    result = backend.execute(f"{shell_exe} -c {shlex.quote(expanded_script)}")
 
     if result.exit_code != 0:
         console.print(f"[red]❌ Setup script failed (exit {result.exit_code}):[/red]")

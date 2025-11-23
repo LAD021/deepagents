@@ -13,6 +13,8 @@ import os
 from deepagents.backends.protocol import ExecuteResponse
 from deepagents.backends.sandbox import BaseSandbox
 from runloop_api_client import Runloop
+from deepagents_cli.config import detect_invoking_shell
+import shlex
 
 
 class RunloopBackend(BaseSandbox):
@@ -67,9 +69,11 @@ class RunloopBackend(BaseSandbox):
         Returns:
             ExecuteResponse with combined output, exit code, optional signal, and truncation flag.
         """
+        shell_exe = detect_invoking_shell()
+        wrapped = f"{shell_exe} -c {shlex.quote(command)}"
         result = self._client.devboxes.execute_and_await_completion(
             devbox_id=self._devbox_id,
-            command=command,
+            command=wrapped,
             timeout=self._timeout,
         )
         # Combine stdout and stderr

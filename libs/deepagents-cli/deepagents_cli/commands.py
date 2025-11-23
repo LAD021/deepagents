@@ -6,7 +6,7 @@ from pathlib import Path
 
 from langgraph.checkpoint.memory import InMemorySaver
 
-from .config import COLORS, DEEP_AGENTS_ASCII, console
+from .config import COLORS, DEEP_AGENTS_ASCII, console, detect_invoking_shell
 from .ui import TokenTracker, show_interactive_help
 
 
@@ -63,7 +63,7 @@ def execute_bash_command(command: str) -> bool:
         console.print(f"[dim]$ {cmd}[/dim]")
 
         # Execute the command
-        shell_exe = "/bin/zsh" if sys.platform == "darwin" else None
+        shell_exe = detect_invoking_shell()
         kwargs = {
             "check": False,
             "shell": True,
@@ -72,8 +72,7 @@ def execute_bash_command(command: str) -> bool:
             "timeout": 30,
             "cwd": Path.cwd(),
         }
-        if shell_exe:
-            kwargs["executable"] = shell_exe
+        kwargs["executable"] = shell_exe
         result = subprocess.run(cmd, **kwargs)
 
         # Display output

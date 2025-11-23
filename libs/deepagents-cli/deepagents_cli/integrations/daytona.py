@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from deepagents.backends.protocol import ExecuteResponse
+from deepagents_cli.config import detect_invoking_shell
+import shlex
 from deepagents.backends.sandbox import BaseSandbox
 
 if TYPE_CHECKING:
@@ -44,7 +46,9 @@ class DaytonaBackend(BaseSandbox):
         Returns:
             ExecuteResponse with combined output, exit code, optional signal, and truncation flag.
         """
-        result = self._sandbox.process.exec(command, timeout=self._timeout)
+        shell_exe = detect_invoking_shell()
+        wrapped = f"{shell_exe} -c {shlex.quote(command)}"
+        result = self._sandbox.process.exec(wrapped, timeout=self._timeout)
 
         return ExecuteResponse(
             output=result.result,  # Daytona combines stdout/stderr

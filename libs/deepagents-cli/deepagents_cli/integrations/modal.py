@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from deepagents.backends.protocol import ExecuteResponse
+from deepagents_cli.config import detect_invoking_shell
 from deepagents.backends.sandbox import BaseSandbox
 
 if TYPE_CHECKING:
@@ -45,7 +46,8 @@ class ModalBackend(BaseSandbox):
             ExecuteResponse with combined output, exit code, and truncation flag.
         """
         # Execute command using Modal's exec API
-        process = self._sandbox.exec("bash", "-c", command, timeout=self._timeout)
+        shell_exe = detect_invoking_shell()
+        process = self._sandbox.exec(shell_exe, "-c", command, timeout=self._timeout)
 
         # Wait for process to complete
         process.wait()
