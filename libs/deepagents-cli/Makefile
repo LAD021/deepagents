@@ -61,7 +61,7 @@ help:
 	@echo '-- DOCUMENTATION tasks are from the top-level Makefile --'
 
 install:
-	uv tool install --reinstall .
+	uv tool install --force --reinstall .
 	@mkdir -p ~/.deepagents
 	@date '+%Y-%m-%d %H:%M:%S %Z' > ~/.deepagents/latest_updata_time.txt
 

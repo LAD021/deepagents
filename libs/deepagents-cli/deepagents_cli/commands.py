@@ -1,6 +1,7 @@
 """Command handlers for slash commands and bash execution."""
 
 import subprocess
+import sys
 from pathlib import Path
 
 from langgraph.checkpoint.memory import InMemorySaver
@@ -62,9 +63,18 @@ def execute_bash_command(command: str) -> bool:
         console.print(f"[dim]$ {cmd}[/dim]")
 
         # Execute the command
-        result = subprocess.run(
-            cmd, check=False, shell=True, capture_output=True, text=True, timeout=30, cwd=Path.cwd()
-        )
+        shell_exe = "/bin/zsh" if sys.platform == "darwin" else None
+        kwargs = {
+            "check": False,
+            "shell": True,
+            "capture_output": True,
+            "text": True,
+            "timeout": 30,
+            "cwd": Path.cwd(),
+        }
+        if shell_exe:
+            kwargs["executable"] = shell_exe
+        result = subprocess.run(cmd, **kwargs)
 
         # Display output
         if result.stdout:

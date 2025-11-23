@@ -10,6 +10,7 @@ from pathlib import Path
 import dotenv
 from langchain_core.language_models import BaseChatModel
 from rich.console import Console
+import platform
 
 dotenv.load_dotenv()
 extra_env = os.environ.get("DEEPAGENTS_ENV_PATH") or str(Path.home() / ".deepagents/.env")
@@ -18,6 +19,14 @@ try:
         dotenv.load_dotenv(extra_env, override=False)
 except Exception:
     pass
+
+# macOS shell adaptation: prefer system zsh when available
+if platform.system() == "Darwin":
+    os.environ.setdefault("SHELL", "/bin/zsh")
+    hb = "/opt/homebrew/bin"
+    current_path = os.environ.get("PATH", "")
+    if hb not in current_path.split(":"):
+        os.environ["PATH"] = f"{hb}:{current_path}" if current_path else hb
 
 # Color scheme
 COLORS = {
