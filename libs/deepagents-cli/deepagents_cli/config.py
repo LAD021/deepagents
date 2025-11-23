@@ -152,15 +152,19 @@ def detect_invoking_shell() -> str:
         if name:
             if name.startswith("-"):
                 name = name[1:]
-            full = shutil.which(name)
-            if full:
-                return full
+            base = name.split("/")[-1]
+            if base in {"bash", "zsh", "sh", "fish"}:
+                full = shutil.which(base)
+                if full:
+                    return full
     except Exception:
         pass
 
     shell_env = os.environ.get("SHELL")
     if shell_env:
-        return shell_env
+        base = shell_env.split("/")[-1]
+        if base in {"bash", "zsh", "sh", "fish"}:
+            return shell_env
 
     # Final platform-specific fallback
     if platform.system() == "Darwin":
