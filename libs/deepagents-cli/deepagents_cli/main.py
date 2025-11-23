@@ -12,6 +12,7 @@ from deepagents_cli.commands import execute_bash_command, handle_command
 from deepagents_cli.config import (
     COLORS,
     DEEP_AGENTS_ASCII,
+    detect_invoking_shell,
     SessionState,
     console,
     create_model,
@@ -186,6 +187,7 @@ async def simple_cli(
         working_dir = get_default_working_dir(sandbox_type)
         console.print(f"  [dim]Local CLI directory: {Path.cwd()}[/dim]")
         console.print(f"  [dim]Code execution: Remote sandbox ({working_dir})[/dim]")
+        console.print(f"  [dim]Shell: {detect_invoking_shell()}[/dim]")
         latest_path = Path.home() / ".deepagents" / "latest_updata_time.txt"
         latest = None
         try:
@@ -199,6 +201,7 @@ async def simple_cli(
             console.print("  [dim]Last install time: N/A[/dim]")
     else:
         console.print(f"  [dim]Working directory: {Path.cwd()}[/dim]")
+        console.print(f"  [dim]Shell: {detect_invoking_shell()}[/dim]")
         latest_path = Path.home() / ".deepagents" / "latest_updata_time.txt"
         latest = None
         try:

@@ -121,6 +121,52 @@ def _find_project_agent_md(project_root: Path) -> list[Path]:
     return paths
 
 
+def detect_invoking_shell() -> str:
+    """Detect the shell binary that invoked the current process.
+
+    Attempts to determine the actual shell executable path that started
+    the CLI, rather than relying solely on the `SHELL` environment
+    variable which typically reflects the user's login shell.
+
+    Strategy:
+    1. Query the parent process via `ps` to obtain the command name.
+    2. Normalize leading `-` (login shell notation like `-bash`).
+    3. Resolve the full path with `shutil.which(name)`.
+    4. Fallbacks: use `SHELL` env var, and on macOS prefer `/bin/zsh`.
+
+    Returns:
+        A filesystem path to the detected shell (e.g., `/bin/bash`).
+    """
+    import shutil
+    import subprocess
+    try:
+        ppid = os.getppid()
+        # macOS/BSD `ps` supports `-o comm=` to show executable name
+        proc = subprocess.run(
+            ["ps", "-o", "comm=", "-p", str(ppid)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        name = (proc.stdout or "").strip()
+        if name:
+            if name.startswith("-"):
+                name = name[1:]
+            full = shutil.which(name)
+            if full:
+                return full
+    except Exception:
+        pass
+
+    shell_env = os.environ.get("SHELL")
+    if shell_env:
+        return shell_env
+
+    # Final platform-specific fallback
+    if platform.system() == "Darwin":
+        return "/bin/zsh"
+    return "/bin/sh"
+
 @dataclass
 class Settings:
     """Global settings and environment detection for deepagents-cli.
