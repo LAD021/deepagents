@@ -22,6 +22,7 @@ dependencies = [
 [project.scripts]
 deepagents = "deepagents_cli:cli_main"
 deepagents-cli = "deepagents_cli:cli_main"
+udagent = "deepagents_cli:cli_main"
 
 [dependency-groups]
 test = [

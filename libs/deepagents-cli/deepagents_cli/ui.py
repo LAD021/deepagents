@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 from pathlib import Path
+import sys
 from typing import Any
 
 from rich import box
@@ -542,14 +543,15 @@ def show_help() -> None:
     console.print(DEEP_AGENTS_ASCII, style=f"bold {COLORS['primary']}")
     console.print()
 
+    cli_name = Path(sys.argv[0]).name or "deepagents"
     console.print("[bold]Usage:[/bold]", style=COLORS["primary"])
-    console.print("  deepagents [OPTIONS]                           Start interactive session")
-    console.print("  deepagents list                                List all available agents")
-    console.print("  deepagents reset --agent AGENT                 Reset agent to default prompt")
+    console.print(f"  {cli_name} [OPTIONS]                           Start interactive session")
+    console.print(f"  {cli_name} list                                List all available agents")
+    console.print(f"  {cli_name} reset --agent AGENT                 Reset agent to default prompt")
     console.print(
-        "  deepagents reset --agent AGENT --target SOURCE Reset agent to copy of another agent"
+        f"  {cli_name} reset --agent AGENT --target SOURCE Reset agent to copy of another agent"
     )
-    console.print("  deepagents help                                Show this help message")
+    console.print(f"  {cli_name} help                                Show this help message")
     console.print()
 
     console.print("[bold]Options:[/bold]", style=COLORS["primary"])
@@ -563,36 +565,36 @@ def show_help() -> None:
 
     console.print("[bold]Examples:[/bold]", style=COLORS["primary"])
     console.print(
-        "  deepagents                              # Start with default agent", style=COLORS["dim"]
+        f"  {cli_name}                              # Start with default agent", style=COLORS["dim"]
     )
     console.print(
-        "  deepagents --agent mybot                # Start with agent named 'mybot'",
+        f"  {cli_name} --agent mybot                # Start with agent named 'mybot'",
         style=COLORS["dim"],
     )
     console.print(
-        "  deepagents --auto-approve               # Start with auto-approve enabled",
+        f"  {cli_name} --auto-approve               # Start with auto-approve enabled",
         style=COLORS["dim"],
     )
     console.print(
-        "  deepagents --sandbox runloop            # Execute code in Runloop sandbox",
+        f"  {cli_name} --sandbox runloop            # Execute code in Runloop sandbox",
         style=COLORS["dim"],
     )
     console.print(
-        "  deepagents --sandbox modal              # Execute code in Modal sandbox",
+        f"  {cli_name} --sandbox modal              # Execute code in Modal sandbox",
         style=COLORS["dim"],
     )
     console.print(
-        "  deepagents --sandbox runloop --sandbox-id dbx_123  # Reuse existing sandbox",
+        f"  {cli_name} --sandbox runloop --sandbox-id dbx_123  # Reuse existing sandbox",
         style=COLORS["dim"],
     )
     console.print(
-        "  deepagents list                         # List all agents", style=COLORS["dim"]
+        f"  {cli_name} list                         # List all agents", style=COLORS["dim"]
     )
     console.print(
-        "  deepagents reset --agent mybot          # Reset mybot to default", style=COLORS["dim"]
+        f"  {cli_name} reset --agent mybot          # Reset mybot to default", style=COLORS["dim"]
     )
     console.print(
-        "  deepagents reset --agent mybot --target other # Reset mybot to copy of 'other' agent",
+        f"  {cli_name} reset --agent mybot --target other # Reset mybot to copy of 'other' agent",
         style=COLORS["dim"],
     )
     console.print()
