@@ -23,10 +23,16 @@ except Exception:
 # macOS shell adaptation: prefer system zsh when available
 if platform.system() == "Darwin":
     os.environ.setdefault("SHELL", "/bin/zsh")
-    hb = "/opt/homebrew/bin"
+    prepend_paths = [
+        "/opt/homebrew/bin",
+        "/usr/local/bin",
+    ]
     current_path = os.environ.get("PATH", "")
-    if hb not in current_path.split(":"):
-        os.environ["PATH"] = f"{hb}:{current_path}" if current_path else hb
+    parts = current_path.split(":") if current_path else []
+    for p in prepend_paths:
+        if p and p not in parts:
+            parts.insert(0, p)
+    os.environ["PATH"] = ":".join(parts) if parts else ""
 
 # Color scheme
 COLORS = {

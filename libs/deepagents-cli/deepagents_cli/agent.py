@@ -322,6 +322,7 @@ def create_agent_with_config(
                 workspace_root=os.getcwd(),
                 execution_policy=HostExecutionPolicy(),
                 shell_command=detect_invoking_shell(),
+                env=dict(os.environ),
             ),
         ]
         if os.environ.get("DEEPAGENTS_LOG_WORK_MEMORY", "false").lower() in {"1", "true", "yes"}:
