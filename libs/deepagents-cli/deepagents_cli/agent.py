@@ -22,7 +22,14 @@ from langgraph.runtime import Runtime
 
 from deepagents_cli._internal import ResumableShellToolMiddleware
 from deepagents_cli.agent_memory import AgentMemoryMiddleware
-from deepagents_cli.config import COLORS, config, console, get_default_coding_instructions, settings
+from deepagents_cli.config import (
+    COLORS,
+    config,
+    console,
+    get_default_coding_instructions,
+    settings,
+    detect_invoking_shell,
+)
 from deepagents_cli.integrations.sandbox_factory import get_default_working_dir
 from deepagents_cli.skills import SkillsMiddleware
 from deepagents_cli.working_memory_logger import WorkingMemoryLoggingMiddleware
@@ -312,7 +319,9 @@ def create_agent_with_config(
             AgentMemoryMiddleware(settings=settings, assistant_id=assistant_id),
             SkillsMiddleware(skills_dir=skills_dir, assistant_id=assistant_id),
             ResumableShellToolMiddleware(
-                workspace_root=os.getcwd(), execution_policy=HostExecutionPolicy()
+                workspace_root=os.getcwd(),
+                execution_policy=HostExecutionPolicy(),
+                shell_command=detect_invoking_shell(),
             ),
         ]
         if os.environ.get("DEEPAGENTS_LOG_WORK_MEMORY", "false").lower() in {"1", "true", "yes"}:
